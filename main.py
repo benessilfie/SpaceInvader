@@ -1,6 +1,8 @@
-import math
 import random
+import math
+
 import pygame
+from pygame import mixer
 
 # Initialize pygame
 pygame.init()
@@ -23,13 +25,20 @@ playerX = 370
 playerY = 480
 playerX_change = 0
 
-# Add Enemy
-enemyImg = pygame.image.load('images/enemy.png')
-enemyImg = pygame.transform.scale(enemyImg, (58, 58))
-enemyX = random.randint(0, 740)
-enemyY = random.randint(50, 150)
-enemyX_change = 1.5
-enemyY_change = 30
+# Add Mutiple Enemies
+enemyImg = []
+enemyX = []
+enemyY = []
+enemyX_change = []
+enemyY_change = []
+for i in range(6):
+    enemyImg.append(pygame.image.load('images/enemy.png'))
+    enemyImg[i] = pygame.transform.scale(enemyImg[i], (58, 58))
+    enemyX.append(random.randint(0, 740))
+    enemyY.append(random.randint(50, 150))
+    enemyX_change.append(1.5)
+    enemyY_change.append(30)
+
 
 # Add Bullet
 bulletImg = pygame.image.load('images/bullet.png')
@@ -41,15 +50,14 @@ bullet_state = "ready"
 
 # Add score
 score_value = 0
-# font = pygame.font.Font('freesansbold.ttf', 32)
-# textX = 10
-# textY = 10
+font = pygame.font.Font('freesansbold.ttf', 32)
+textX = 10
+textY = 10
 
-# Function to draw the score
-# def show_score(x, y):
-#     score = font.render("Score: " + str(score_value), True, (255, 255, 255))
-#     screen.blit(score, (x, y))
-
+# Function to show score on the screen
+def show_score(x, y):
+    score = font.render("Score: " + str(score_value), True, (255, 255, 255))
+    screen.blit(score, (x, y))
 
 # Function to draw the player on the screen
 def player(x, y):
@@ -57,8 +65,8 @@ def player(x, y):
 
 
 # Function to draw the enemy on the screen
-def enemy(x, y):
-    screen.blit(enemyImg, (x, y))
+def enemy(x, y, i):
+    screen.blit(enemyImg[i], (x, y))
 
 
 # Function to fire bullet
@@ -94,11 +102,11 @@ while running:
         if event.type == pygame.KEYDOWN:
             # Player should move left when the left arrow is pressed
             if event.key == pygame.K_LEFT:
-                playerX_change = -2.4
+                playerX_change = -2.8
 
             # Player should move right when the right arrow is pressed
             if event.key == pygame.K_RIGHT:
-                playerX_change = 2.4
+                playerX_change = 2.8
 
             # Bullet should fire when player presses the space bar
             if event.key == pygame.K_SPACE:
@@ -124,15 +132,35 @@ while running:
         playerX = 742
 
     # Move the enemy on the screen
-    enemyX += enemyX_change
+    for i in range(6):
+        enemyX[i] += enemyX_change[i]
+        if enemyX[i] <= 0:
+            enemyX_change[i] = 1.5
+            enemyY[i] += enemyY_change[i]
+        elif enemyX[i] >= 740:
+            enemyX_change[i] = -1.5
+            enemyY[i] += enemyY_change[i]
 
-    # Check if the enemy is out of the screen
-    if enemyX <= 0:
-        enemyX_change = 1.5
-        enemyY += enemyY_change
-    elif enemyX >= 742:
-        enemyX_change = -1.5
-        enemyY += enemyY_change
+        # Check if the enemy is out of the screen
+        if enemyY[i] >= 450:
+            for j in range(6):
+                enemyY[j] = 2000
+            game_over_text()
+            break
+
+        # Check if the enemy and player collide
+        collision = is_collision(enemyX[i], enemyY[i], bulletX, bulletY)
+        if collision:
+            explosion_sound = pygame.mixer.Sound('sounds/explosion.wav')
+            explosion_sound.play()
+            bulletY = 480
+            bullet_state = "ready"
+            score_value += 1
+            enemyX[i] = random.randint(0, 740)
+            enemyY[i] = random.randint(50, 150)
+
+        enemy(enemyX[i], enemyY[i], i)
+
 
     # Bullet movement
     if bulletY <= 0:
@@ -143,20 +171,11 @@ while running:
         fire_bullet(bulletX, bulletY)
         bulletY -= bulletY_change
 
-    # Check if the bullet has hit the enemy
-    collision = is_collision(enemyX, enemyY, bulletX, bulletY)
-    if collision:
-        bulletY = 480
-        bullet_state = "ready"
-        score_value += 1
-        enemyX = random.randint(0, 740)
-        enemyY = random.randint(50, 150)
-
     # Draw the player on the screen
     player(playerX, playerY)
 
-    # Draw the enemy on the screen
-    enemy(enemyX, enemyY)
+    # Draw the score on the screen
+    show_score(textX, textY)
 
     # Update the screen
     pygame.display.update()
