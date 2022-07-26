@@ -17,7 +17,7 @@ pygame.display.set_icon(icon)
 
 # Add Player
 playerImg = pygame.image.load('images/player2.png')
-playerImg = pygame.transform.scale(playerImg, (58, 58))
+playerImg = pygame.transform.scale(playerImg, (64, 64))
 playerX = 370
 playerY = 480
 playerX_change = 0
@@ -30,6 +30,14 @@ enemyY = random.randint(50, 150)
 enemyX_change = 1.5
 enemyY_change = 30
 
+# Add Bullet
+bulletImg = pygame.image.load('images/bullet.png')
+bulletX = 0
+bulletY = 480
+bulletX_change = 0
+bulletY_change = 10
+bullet_state = "ready"
+
 
 # Function to draw the player on the screen
 def player(x, y):
@@ -39,6 +47,13 @@ def player(x, y):
 # Function to draw the enemy on the screen
 def enemy(x, y):
     screen.blit(enemyImg, (x, y))
+
+
+# Function to fire bullet
+def fire_bullet(x, y):
+    global bullet_state
+    bullet_state = "fire"
+    screen.blit(bulletImg, (x + 16, y + 10))
 
 
 # Keep game in an infinite loop until closed
@@ -55,15 +70,19 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # Add keystroke event for when the left or right keys are pressed
-    if event.type == pygame.KEYDOWN:
-        # Player should move left when the left arrow is pressed
-        if event.key == pygame.K_LEFT:
-            playerX_change = -2.4
+        # Add keystroke event for when the left or right keys are pressed
+        if event.type == pygame.KEYDOWN:
+            # Player should move left when the left arrow is pressed
+            if event.key == pygame.K_LEFT:
+                playerX_change = -2.4
 
-        # Player should move right when the right arrow is pressed
-        if event.key == pygame.K_RIGHT:
-            playerX_change = 2.4
+            # Player should move right when the right arrow is pressed
+            if event.key == pygame.K_RIGHT:
+                playerX_change = 2.4
+
+            # Bullet should fire when player presses the space bar
+            if event.key == pygame.K_SPACE:
+                fire_bullet(playerX, bulletY)
 
     # Add keystroke event for when the left or right keys are released
     if event.type == pygame.KEYUP:
@@ -90,6 +109,11 @@ while running:
     elif enemyX >= 742:
         enemyX_change = -1.5
         enemyY += enemyY_change
+
+    # Bullet movement
+    if bullet_state == "fire":
+        fire_bullet(playerX, bulletY)
+        bulletY -= bulletY_change
 
     # Draw the player on the screen
     player(playerX, playerY)
