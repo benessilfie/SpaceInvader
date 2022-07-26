@@ -82,7 +82,11 @@ while running:
 
             # Bullet should fire when player presses the space bar
             if event.key == pygame.K_SPACE:
-                fire_bullet(playerX, bulletY)
+                if bullet_state == "ready":
+                    bullet_sound = pygame.mixer.Sound('sounds/laser.wav')
+                    bullet_sound.play()
+                    bulletX = playerX
+                    fire_bullet(bulletX, bulletY)
 
     # Add keystroke event for when the left or right keys are released
     if event.type == pygame.KEYUP:
@@ -111,8 +115,11 @@ while running:
         enemyY += enemyY_change
 
     # Bullet movement
+    if bulletY <= 0:
+        bulletY = 480
+        bullet_state = "ready"
     if bullet_state == "fire":
-        fire_bullet(playerX, bulletY)
+        fire_bullet(bulletX, bulletY)
         bulletY -= bulletY_change
 
     # Draw the player on the screen
