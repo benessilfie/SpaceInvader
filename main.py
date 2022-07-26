@@ -13,6 +13,10 @@ screen = pygame.display.set_mode((800, 600))
 # Background image
 background = pygame.image.load('images/background.png')
 
+# Backgroun music
+mixer.music.load('sounds/background.wav')
+mixer.music.play(-1)
+
 # Set the title and logo of the window
 pygame.display.set_caption("Space Invaders")
 icon = pygame.image.load('images/spaceship.png')
@@ -56,7 +60,7 @@ textY = 10
 
 # Function to show score on the screen
 def show_score(x, y):
-    score = font.render("Score: " + str(score_value), True, (255, 255, 255))
+    score = font.render("Score: " + str(score_value), True, (0, 255, 0))
     screen.blit(score, (x, y))
 
 # Function to draw the player on the screen
