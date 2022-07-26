@@ -1,5 +1,6 @@
-import pygame
+import math
 import random
+import pygame
 
 # Initialize pygame
 pygame.init()
@@ -25,7 +26,7 @@ playerX_change = 0
 # Add Enemy
 enemyImg = pygame.image.load('images/enemy.png')
 enemyImg = pygame.transform.scale(enemyImg, (58, 58))
-enemyX = random.randint(0, 800)
+enemyX = random.randint(0, 740)
 enemyY = random.randint(50, 150)
 enemyX_change = 1.5
 enemyY_change = 30
@@ -37,6 +38,17 @@ bulletY = 480
 bulletX_change = 0
 bulletY_change = 10
 bullet_state = "ready"
+
+# Add score
+score_value = 0
+# font = pygame.font.Font('freesansbold.ttf', 32)
+# textX = 10
+# textY = 10
+
+# Function to draw the score
+# def show_score(x, y):
+#     score = font.render("Score: " + str(score_value), True, (255, 255, 255))
+#     screen.blit(score, (x, y))
 
 
 # Function to draw the player on the screen
@@ -54,6 +66,14 @@ def fire_bullet(x, y):
     global bullet_state
     bullet_state = "fire"
     screen.blit(bulletImg, (x + 16, y + 10))
+
+# Function to implement collision
+def is_collision(enemyX, enemyY, bulletX, bulletY):
+    distance = math.sqrt((math.pow(enemyX - bulletX, 2)) + (math.pow(enemyY - bulletY, 2)))
+    if distance < 27:
+        return True
+    else:
+        return False
 
 
 # Keep game in an infinite loop until closed
@@ -118,9 +138,19 @@ while running:
     if bulletY <= 0:
         bulletY = 480
         bullet_state = "ready"
+
     if bullet_state == "fire":
         fire_bullet(bulletX, bulletY)
         bulletY -= bulletY_change
+
+    # Check if the bullet has hit the enemy
+    collision = is_collision(enemyX, enemyY, bulletX, bulletY)
+    if collision:
+        bulletY = 480
+        bullet_state = "ready"
+        score_value += 1
+        enemyX = random.randint(0, 740)
+        enemyY = random.randint(50, 150)
 
     # Draw the player on the screen
     player(playerX, playerY)
