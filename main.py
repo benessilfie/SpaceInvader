@@ -7,6 +7,9 @@ pygame.init()
 # Create the screen
 screen = pygame.display.set_mode((800, 600))
 
+# Background image
+background = pygame.image.load('images/background.png')
+
 # Set the title and logo of the window
 pygame.display.set_caption("Space Invaders")
 icon = pygame.image.load('images/spaceship.png')
@@ -24,7 +27,7 @@ enemyImg = pygame.image.load('images/enemy.png')
 enemyImg = pygame.transform.scale(enemyImg, (58, 58))
 enemyX = random.randint(0, 800)
 enemyY = random.randint(50, 150)
-enemyX_change = 0.2
+enemyX_change = 1.5
 enemyY_change = 30
 
 
@@ -44,6 +47,9 @@ while running:
     # Fill the screen with a background color
     screen.fill((0, 0, 0))
 
+    # Draw the background image
+    screen.blit(background, (0, 0))
+
     # Add event to close game when user clicks the close button
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -53,11 +59,11 @@ while running:
     if event.type == pygame.KEYDOWN:
         # Player should move left when the left arrow is pressed
         if event.key == pygame.K_LEFT:
-            playerX_change = -0.2
+            playerX_change = -2.4
 
         # Player should move right when the right arrow is pressed
         if event.key == pygame.K_RIGHT:
-            playerX_change = 0.2
+            playerX_change = 2.4
 
     # Add keystroke event for when the left or right keys are released
     if event.type == pygame.KEYUP:
@@ -79,10 +85,10 @@ while running:
 
     # Check if the enemy is out of the screen
     if enemyX <= 0:
-        enemyX_change = 0.2
+        enemyX_change = 1.5
         enemyY += enemyY_change
     elif enemyX >= 742:
-        enemyX_change = -0.2
+        enemyX_change = -1.5
         enemyY += enemyY_change
 
     # Draw the player on the screen
