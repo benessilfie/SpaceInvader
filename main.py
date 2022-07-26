@@ -14,8 +14,8 @@ screen = pygame.display.set_mode((800, 600))
 background = pygame.image.load('images/background.png')
 
 # Backgroun music
-mixer.music.load('sounds/background.wav')
-mixer.music.play(-1)
+# mixer.music.load('sounds/background.wav')
+# mixer.music.play(-1)
 
 # Set the title and logo of the window
 pygame.display.set_caption("Space Invaders")
@@ -43,7 +43,6 @@ for i in range(6):
     enemyX_change.append(1.5)
     enemyY_change.append(30)
 
-
 # Add Bullet
 bulletImg = pygame.image.load('images/bullet.png')
 bulletX = 0
@@ -58,10 +57,12 @@ font = pygame.font.Font('freesansbold.ttf', 32)
 textX = 10
 textY = 10
 
+
 # Function to show score on the screen
 def show_score(x, y):
-    score = font.render("Score: " + str(score_value), True, (0, 255, 0))
+    score = font.render("Score: " + str(score_value), True, (255, 255, 255))
     screen.blit(score, (x, y))
+
 
 # Function to draw the player on the screen
 def player(x, y):
@@ -79,6 +80,7 @@ def fire_bullet(x, y):
     bullet_state = "fire"
     screen.blit(bulletImg, (x + 16, y + 10))
 
+
 # Function to implement collision
 def is_collision(enemyX, enemyY, bulletX, bulletY):
     distance = math.sqrt((math.pow(enemyX - bulletX, 2)) + (math.pow(enemyY - bulletY, 2)))
@@ -86,6 +88,7 @@ def is_collision(enemyX, enemyY, bulletX, bulletY):
         return True
     else:
         return False
+
 
 # function to implent Game over text
 def game_over_text():
@@ -178,7 +181,6 @@ while running:
             enemyY[i] = random.randint(50, 150)
 
         enemy(enemyX[i], enemyY[i], i)
-
 
     # Bullet movement
     if bulletY <= 0:
